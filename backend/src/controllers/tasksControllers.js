@@ -2,8 +2,22 @@ import Task from '../models/Task.js'
 
 export const getAllTasks = async (request, response) => {
     try {
-        const tasks = await Task.find().sort({ createdAt: -1 });
-        response.status(200).json(tasks);
+        
+        const result = await Task.aggregate([
+            {
+                $facet: {
+                    tasks: [{$sort: {createdAt: -1}}],
+                    activeCount: [{$match: {status: 'active'}}, {$count: {status: "count"}}],
+                    completeCount: [{$match: {status: 'complete'}}, {$count: {status: "count"}}],
+                },
+            },
+        ]);
+
+        const tasks = result[0].tasks;
+        const activeCount = result[0].activeCount[0]?.count || 0; 
+        const completeCount = result[0].completeCount[0]?.count || 0;
+
+        response.status(200).json({tasks, activeCount, completeCount});
     } catch (error) {
         console.error("Error calling getAllTasks", error);
         response.status(500).json({message: "System Error"})

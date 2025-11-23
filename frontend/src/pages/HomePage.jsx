@@ -6,7 +6,46 @@ import TaskList from '@/components/TaskList';
 import TaskListPagination from '@/components/TaskListPagination';
 import DateTimeFilter from '@/components/DateTimeFilter';
 import Footer from '@/components/Footer';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import axios from 'axios';
+
 const HomePage = () => {
+    const [taskBuffer, setTaskBuffer] = useState([]);
+    const [activeTaskCount, setActiveTaskCount] = useState([]);
+    const [completeTaskCount, setCompleteTaskCount] = useState([]);
+    const [filter, setFilter] = useState(["all"]);
+
+    useEffect(() => {
+        fetchTasks();
+    
+    },[]);
+
+    const fetchTasks = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/api/tasks");
+            setTaskBuffer(response.data);
+            setActiveTaskCount(response.data.activeCount);
+            setCompleteTaskCount(response.data.completeCount)
+            
+
+        } catch (error) {
+            console.error("Error occurs when getting tasks", error);
+            toast.error("Error occurs");
+        } 
+    };
+
+    const filteredTasks = taskBuffer.filter((task) => {
+        switch (filter) {
+            case 'active': 
+                return task.status === "active";
+            case 'completed':
+                return task.status === "complete";
+            default:
+                return true;
+        }
+    })
+
     return (
                 <div className="min-h-screen w-full bg-[#fff8f0] relative">
         {/* Soft Warm Pastel Texture */}
@@ -26,9 +65,14 @@ const HomePage = () => {
 
                 <AddTask/>
 
-                <StatsandFilters/>
+                <StatsandFilters
+                    filter ={filter}
+                    setFilter = {setFilter} 
+                    activeTasksCount={activeTaskCount}
+                    completedTasksCount={completeTaskCount}
+                />
 
-                <TaskList/>
+                <TaskList filteredTasks={filteredTasks} filter ={filter}/>
 
                 <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
                     <TaskListPagination/>
@@ -36,7 +80,10 @@ const HomePage = () => {
 
                 </div>
 
-                <Footer/>
+                <Footer
+                    activeTaskCount={activeTaskCount}
+                    completedTaskCount={completeTaskCount}
+                />
             </div>
             
             </div>

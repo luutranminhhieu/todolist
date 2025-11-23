@@ -2,24 +2,7 @@ import React from 'react'
 import TaskEmptyState from './TaskEmptyState';
 import TaskCard from './TaskCard';
 
-const TaskList = () => {
-  let filter = 'all';
-  const filteredTasks = [
-    {
-      _id: "1",
-      title:"learning sth",
-      status:"active",
-      completedAt: null,
-      createdAt: new Date(),
-    },
-    {
-      _id: "2",
-      title:"watching sth",
-      status:"complete",
-      completedAt: new Date(),
-      createdAt: new Date(),
-    },
-  ];
+const TaskList = ({filteredTasks, filter}) => {
 
   if(filteredTasks || filteredTasks.length === 0) {
     return <TaskEmptyState filter={filter}/>

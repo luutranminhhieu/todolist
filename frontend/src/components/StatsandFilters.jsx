@@ -4,7 +4,12 @@ import { Button } from './ui/button';
 import { Filter } from 'lucide-react';
 import React from 'react'
 
-const StatsandFilters = ({completedTasksCount = 0,activeTasksCount = 0, filter ="all" }) => {
+const StatsandFilters = ({
+  completedTasksCount = 0,
+  activeTasksCount = 0,
+  filter ="all",
+  setFilter  
+  }) => {
   return (
     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
       <div className='flex gap-3'>
@@ -29,6 +34,7 @@ const StatsandFilters = ({completedTasksCount = 0,activeTasksCount = 0, filter =
               variant = {filter === type ? 'gradient' : 'ghost'}
               size = 'sm'
               className ="capitalize"
+              onClick = {()=> setFilter(type)}
             >
               <Filter className="size-4"/>
               {FilterType[type]}
