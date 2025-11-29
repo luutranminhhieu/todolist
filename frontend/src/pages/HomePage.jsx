@@ -6,7 +6,7 @@ import TaskList from '@/components/TaskList';
 import TaskListPagination from '@/components/TaskListPagination';
 import DateTimeFilter from '@/components/DateTimeFilter';
 import Footer from '@/components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import api from '@/lib/axios';
 import { visibleTaskLimit } from '@/lib/data';
@@ -19,17 +19,7 @@ const HomePage = () => {
     const [dateQuery, setDateQuery] = useState('today');
     const [page, setPage] =useState(1);
 
-    useEffect(() => {
-        fetchTasks();
-    
-    },[dateQuery]);
-
-    useEffect(() => {
-        setPage(1);
-
-    }, [filter, dateQuery]);
-
-    const fetchTasks = async () => {
+    const fetchTasks = useCallback(async () => {
         try {
             const response = await api.get(`/tasks?filter=${dateQuery}`);
             setTaskBuffer(response.data.tasks || []);
@@ -41,7 +31,16 @@ const HomePage = () => {
             console.error("Error occurs when getting tasks", error);
             toast.error("Error occurs");
         } 
-    };
+    }, [dateQuery]);
+
+    useEffect(() => {
+        fetchTasks();
+    }, [fetchTasks]);
+
+    useEffect(() => {
+        setPage(1);
+
+    }, [filter, dateQuery]);
 
     const handleTaskChanged = () => {
         fetchTasks();
