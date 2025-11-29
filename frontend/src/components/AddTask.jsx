@@ -9,6 +9,7 @@ import {toast} from 'sonner';
 const AddTask = ({handleNewTaskAdded}) => {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const addTask = async () => {
+    console.log("addTask called! Title:", newTaskTitle);
     if(newTaskTitle.trim()) {
       try {
         await api.post("/tasks", {title: newTaskTitle});

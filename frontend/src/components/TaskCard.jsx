@@ -13,6 +13,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
   const [updateTaskTitle, setUpdateTaskTitle] = useState(task.title || "");
 
   const deleteTask = async(taskId) => {
+    console.log("Delete clicked! TaskId:", taskId);
     try {
       await api.delete(`/tasks/${taskId}`);
       toast.success("Task has been deleted");
@@ -38,6 +39,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
   }
 
   const toggleTaskCompleteButton = async () => {
+    console.log("Toggle button clicked! Task:", task._id);
     try {
       if(task.status === "active") {
         await api.put(`/tasks/${task._id}`, {
