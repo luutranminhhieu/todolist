@@ -3,11 +3,66 @@ import { Card } from './ui/card';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, Circle, Calendar, SquarePen, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
+import api from '@/lib/axios';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
+const TaskCard = ({task, index, handleTaskChanged}) => {
+  const [isEditting, setIsEditting] = useState(false);
+  const [updateTaskTitle, setUpdateTaskTitle] = useState(task.title || "");
 
-const TaskCard = ({task, index}) => {
-  let isEditting = false;
+  const deleteTask = async(taskId) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      toast.success("Task has been deleted");
+      handleTaskChanged();
+    } catch (error) {
+      console.error("Error occurs when deleting task", error);
+      toast.error("Error occurs when deleting task");
+    }
+  };
 
+  const updateTask = async () => {
+    try {
+      setIsEditting(false);
+      await api.put(`/tasks/${task._id}`, {
+        title: updateTaskTitle
+      });
+      toast.success(`Task name has been changed to ${updateTaskTitle}`);
+      handleTaskChanged();
+    } catch (error) { 
+      console.error("Error occurs when update task's name", error);
+      toast.error("Error occurs when update task's name");
+    }
+  }
+
+  const toggleTaskCompleteButton = async () => {
+    try {
+      if(task.status === "active") {
+        await api.put(`/tasks/${task._id}`, {
+          status: "complete",
+          completedAt: new Date().toISOString(),
+        });
+        toast.success(`${task.tittle} has been completed`)
+      } else {
+        await api.put(`/tasks/${task._id}`, {
+          status: "active",
+          completedAt: null,
+        });
+        toast.success(`${task.tittle} has been unchecked`)
+      }
+      handleTaskChanged();
+    } catch (error) {
+      console.error("Error occurs when update task", error);
+      toast.error("Error occurs when update task");
+    }
+  }
+
+  const handleKeyPress = (event) => {
+    if(event.key === "Enter") {
+      updateTask();
+    }
+  };
 
   return (
     <Card className={cn("p-4 bg-gradient border-0 shadow-custom-md hover:shadow-custom-lg transition-all duration-200 animate-fade-in group", task.status === 'complete' && 'opacity')}
@@ -18,6 +73,7 @@ const TaskCard = ({task, index}) => {
           variant="ghost"
           size="icon"
           className ={cn("flex-shrink-0 size-8 rounded-full transition-all duration-200", task.status === "complete" ? "text-success hover:text-success/80" : "text-mute-foreground hover:text-primary")}
+          onClick={toggleTaskCompleteButton}
         >
           {task.status === "complete" 
           ? (<CheckCircle2 calssName="size-5"/>) 
@@ -29,7 +85,14 @@ const TaskCard = ({task, index}) => {
               <Input 
                 placeholder="What to do?"
                 className="flex-1 h-12 text-base border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                type ="text"    
+                type ="text"
+                value = {updateTaskTitle}
+                onChange ={(event) => setUpdateTaskTitle(event.target.value)}
+                onKeyPress ={handleKeyPress}
+                onBlur={()=>{
+                  setIsEditting(false);
+                  setUpdateTaskTitle(task.tile || "")
+                }}   
               />
             ):( 
               <p
@@ -59,18 +122,22 @@ const TaskCard = ({task, index}) => {
           </div>
           </div>
           
-          
           <div clasName="hidden gap-2 group-hover:inline-flex animate-slide-up">
              <Button
               variant="ghost"
               size="icon"
               className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-info"
+              onClick={() => {
+                setIsEditting(true);
+                setUpdateTaskTitle(task.title || "");
+              }}
              >
               <SquarePen clasName="size-4"/>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-destructive"
+                  onClick={() => deleteTask(task._id)}
                 >
                   <Trash2 className="size-4"/>
                 </Button>

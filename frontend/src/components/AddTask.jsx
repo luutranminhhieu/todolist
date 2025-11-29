@@ -3,7 +3,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Plus } from 'lucide-react';
-import axios from 'axios';
+import api from '@/lib/axios';
 import {toast} from 'sonner';
 
 const AddTask = (handleNewTaskAdded) => {
@@ -11,7 +11,7 @@ const AddTask = (handleNewTaskAdded) => {
   const addTask = async () => {
     if(newTaskTitle.trim()) {
       try {
-        await axios.post("http://localhost:5000/api/tasks", {title: newTaskTitle});
+        await api.post("http://localhost:5000/api/tasks", {title: newTaskTitle});
         toast.success(`${newTaskTitle} is added`);
         handleNewTaskAdded();
       } catch (error) {
@@ -46,6 +46,7 @@ const AddTask = (handleNewTaskAdded) => {
             size="xl"
             className="px-6"
             onClick={addTask}
+            disabled={!newTaskTitle.trim()}
         >
           <Plus className="size-5"/> Add
         </Button>

@@ -8,22 +8,30 @@ import DateTimeFilter from '@/components/DateTimeFilter';
 import Footer from '@/components/Footer';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import axios from 'axios';
+import api from '@/lib/axios';
+import { visibleTaskLimit } from '@/lib/data';
 
 const HomePage = () => {
     const [taskBuffer, setTaskBuffer] = useState([]);
     const [activeTaskCount, setActiveTaskCount] = useState([]);
     const [completeTaskCount, setCompleteTaskCount] = useState([]);
-    const [filter, setFilter] = useState(["all"]);
+    const [filter, setFilter] = useState("all");
+    const [dateQuery, setDateQuery] = useState('today');
+    const [page, setPage] =useState(1);
 
     useEffect(() => {
         fetchTasks();
     
-    },[]);
+    },[dateQuery]);
+
+    useEffect(() => {
+        setPage(1);
+
+    }, [filter, dateQuery]);
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/tasks");
+            const response = await api.get(`/tasks?filter=${dateQuery}`);
             setTaskBuffer(response.data);
             setActiveTaskCount(response.data.activeCount);
             setCompleteTaskCount(response.data.completeCount)
@@ -35,6 +43,26 @@ const HomePage = () => {
         } 
     };
 
+    const handleTaskChanged = () => {
+        fetchTasks();
+    };
+
+    const handleNext = () => {
+        if(page < totalPages) {
+            setPage((prev) => prev + 1);
+        }
+    };
+
+    const handlePrev = () => {
+        if(page > 1) {
+            setPage((prev) = prev - 1);
+        }
+    };
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+    };
+
     const filteredTasks = taskBuffer.filter((task) => {
         switch (filter) {
             case 'active': 
@@ -44,7 +72,19 @@ const HomePage = () => {
             default:
                 return true;
         }
-    })
+    });
+
+    const visibleTasks = filteredTasks.slice(
+        (page - 1) *visibleTaskLimit,
+        page * visibleTaskLimit,
+    );
+
+    if (visibleTasks.length === 0) {
+        handlePrev();
+    };
+
+    const totalPages = Math.ceil(filteredTasks.length / visibleTaskLimit);
+    
 
     return (
                 <div className="min-h-screen w-full bg-[#fff8f0] relative">
@@ -63,7 +103,7 @@ const HomePage = () => {
             <div className="w-full max-w-2xl -6 mx-auto space-y-6">
                 <Header/>
 
-                <AddTask/>
+                <AddTask handleNewTaskAdded={handleTaskChanged}/>
 
                 <StatsandFilters
                     filter ={filter}
@@ -72,11 +112,21 @@ const HomePage = () => {
                     completedTasksCount={completeTaskCount}
                 />
 
-                <TaskList filteredTasks={filteredTasks} filter ={filter}/>
+                <TaskList 
+                    filteredTasks={filteredTasks} 
+                    filter ={filter}
+                    handleTaskChanged={handleTaskChanged}
+                />
 
                 <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                    <TaskListPagination/>
-                    <DateTimeFilter/>
+                    <TaskListPagination
+                        handleNext = {handleNext}
+                        handlePrev = {handlePrev}
+                        handlePageChange = {handlePageChange}
+                        page = {page}
+                        totalPages = {totalPages}
+                    />
+                    <DateTimeFilter dateQuery={dateQuery} setDateQuery = {setDateQuery}/>
 
                 </div>
 
