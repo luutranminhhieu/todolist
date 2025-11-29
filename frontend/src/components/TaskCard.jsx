@@ -3,6 +3,7 @@ import { Card } from './ui/card';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, Circle, Calendar, SquarePen, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -43,13 +44,13 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
           status: "complete",
           completedAt: new Date().toISOString(),
         });
-        toast.success(`${task.tittle} has been completed`)
+        toast.success(`${task.title} has been completed`)
       } else {
         await api.put(`/tasks/${task._id}`, {
           status: "active",
           completedAt: null,
         });
-        toast.success(`${task.tittle} has been unchecked`)
+        toast.success(`${task.title} has been unchecked`)
       }
       handleTaskChanged();
     } catch (error) {
@@ -76,7 +77,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
           onClick={toggleTaskCompleteButton}
         >
           {task.status === "complete" 
-          ? (<CheckCircle2 calssName="size-5"/>) 
+          ? (<CheckCircle2 className="size-5"/>) 
           : (<Circle className="size-5"/>)
           }
         </Button>
@@ -91,7 +92,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
                 onKeyPress ={handleKeyPress}
                 onBlur={()=>{
                   setIsEditting(false);
-                  setUpdateTaskTitle(task.tile || "")
+                  setUpdateTaskTitle(task.title || "")
                 }}   
               />
             ):( 
@@ -106,7 +107,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
               </p>
             )}
             <div className="flex items-center gap-2 mt-1">
-            <Calender className="size-3 text-muted-foreground"/>
+            <Calendar className="size-3 text-muted-foreground"/>
             <span className="text-xs text-muted-foreground">
               {new Date(task.createdAt).toLocaleString()}
             </span>
@@ -122,7 +123,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
           </div>
           </div>
           
-          <div clasName="hidden gap-2 group-hover:inline-flex animate-slide-up">
+          <div className="hidden gap-2 group-hover:inline-flex animate-slide-up">
              <Button
               variant="ghost"
               size="icon"
@@ -132,16 +133,16 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
                 setUpdateTaskTitle(task.title || "");
               }}
              >
-              <SquarePen clasName="size-4"/>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-destructive"
-                  onClick={() => deleteTask(task._id)}
-                >
-                  <Trash2 className="size-4"/>
-                </Button>
-
+              <SquarePen className="size-4"/>
+             </Button>
+             
+             <Button
+              variant="ghost"
+              size="icon"
+              className="flex-shrink-0 transition-colors size-8 text-muted-foreground hover:text-destructive"
+              onClick={() => deleteTask(task._id)}
+             >
+              <Trash2 className="size-4"/>
              </Button>
           </div>
       </div>

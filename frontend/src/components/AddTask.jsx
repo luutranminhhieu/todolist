@@ -6,12 +6,12 @@ import { Plus } from 'lucide-react';
 import api from '@/lib/axios';
 import {toast} from 'sonner';
 
-const AddTask = (handleNewTaskAdded) => {
+const AddTask = ({handleNewTaskAdded}) => {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const addTask = async () => {
     if(newTaskTitle.trim()) {
       try {
-        await api.post("http://localhost:5000/api/tasks", {title: newTaskTitle});
+        await api.post("/tasks", {title: newTaskTitle});
         toast.success(`${newTaskTitle} is added`);
         handleNewTaskAdded();
       } catch (error) {
@@ -37,7 +37,7 @@ const AddTask = (handleNewTaskAdded) => {
                placeholder="To do what?"
                className="h-12 text-base bg-slate-50 sm:flex-1 border-border/50 focus:border-primary/50 focus:ring-primary/20"
                value ={newTaskTitle}
-               onchange ={(even) => setNewTaskTitle(even.target.value)} 
+               onChange ={(event) => setNewTaskTitle(event.target.value)} 
                onKeyPress={handleKeyPress}
         />
 

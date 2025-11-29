@@ -32,9 +32,9 @@ const HomePage = () => {
     const fetchTasks = async () => {
         try {
             const response = await api.get(`/tasks?filter=${dateQuery}`);
-            setTaskBuffer(response.data);
-            setActiveTaskCount(response.data.activeCount);
-            setCompleteTaskCount(response.data.completeCount)
+            setTaskBuffer(response.data.tasks || []);
+            setActiveTaskCount(response.data.activeCount || 0);
+            setCompleteTaskCount(response.data.completeCount || 0);
             
 
         } catch (error) {
@@ -55,7 +55,7 @@ const HomePage = () => {
 
     const handlePrev = () => {
         if(page > 1) {
-            setPage((prev) = prev - 1);
+            setPage((prev) => prev - 1);
         }
     };
 
@@ -79,7 +79,7 @@ const HomePage = () => {
         page * visibleTaskLimit,
     );
 
-    if (visibleTasks.length === 0) {
+    if (visibleTasks.length === 0 && page > 1) {
         handlePrev();
     };
 
@@ -113,7 +113,7 @@ const HomePage = () => {
                 />
 
                 <TaskList 
-                    filteredTasks={filteredTasks} 
+                    filteredTasks={visibleTasks} 
                     filter ={filter}
                     handleTaskChanged={handleTaskChanged}
                 />

@@ -7,11 +7,11 @@ export const getAllTasks = async (request, response) => {
 
     switch (filter) {
         case "today": {
-            startDate = new Date(now.getFullYear, now.getMonth(), now.getDate());
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             break;
         };
         case "week": {
-            const mondayDate = now.getDate() = (now.getDay() - 1) - (now.getDay() === 0 ? 7 : 0);
+            const mondayDate = now.getDate() - (now.getDay() - 1) - (now.getDay() === 0 ? 7 : 0);
             startDate = new Date(now.getFullYear(), now.getMonth(), mondayDate);
             break;
         };
@@ -34,8 +34,8 @@ export const getAllTasks = async (request, response) => {
             {
                 $facet: {
                     tasks: [{$sort: {createdAt: -1}}],
-                    activeCount: [{$match: {status: 'active'}}, {$count: {status: "count"}}],
-                    completeCount: [{$match: {status: 'complete'}}, {$count: {status: "count"}}],
+                    activeCount: [{$match: {status: 'active'}}, {$count: "count"}],
+                    completeCount: [{$match: {status: 'complete'}}, {$count: "count"}],
                 },
             },
         ]);
@@ -66,13 +66,13 @@ export const createTasks = async (request, response) => {
 
 export const updateTasks = async (request, response) => {
     try {
-        const {title, status, completeAt} = request.body;
+        const {title, status, completedAt} = request.body;
         const updatedTask = await Task.findByIdAndUpdate(
             request.params.id,
             {
                 title,
                 status,
-                completeAt,
+                completedAt,
             },
             { new: true }
         );

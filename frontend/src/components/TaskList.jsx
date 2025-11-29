@@ -4,7 +4,7 @@ import TaskCard from './TaskCard';
 
 const TaskList = ({filteredTasks, filter, handleTaskChanged}) => {
 
-  if(filteredTasks || filteredTasks.length === 0) {
+  if(!filteredTasks || filteredTasks.length === 0) {
     return <TaskEmptyState filter={filter}/>
   }
 
