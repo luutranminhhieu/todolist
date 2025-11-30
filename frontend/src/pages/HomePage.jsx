@@ -89,7 +89,7 @@ const HomePage = () => {
                 <div className="min-h-screen w-full bg-[#fff8f0] relative">
         {/* Soft Warm Pastel Texture */}
         <div
-            className="absolute inset-0 z-0"
+            className="absolute inset-0 z-0 pointer-events-none"
             style={{
             backgroundImage: `
                 radial-gradient(circle at 20% 80%, rgba(255, 182, 153, 0.3) 0%, transparent 50%),
@@ -98,7 +98,7 @@ const HomePage = () => {
             }}
         />
             {/* Your Content/Components */}
-            <div className="container pt-8 mx-auto">
+            <div className="container pt-8 mx-auto relative z-10">
             <div className="w-full max-w-2xl -6 mx-auto space-y-6">
                 <Header/>
 

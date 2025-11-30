@@ -61,7 +61,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
     }
   }
 
-  const handleKeyPress = (event) => {
+  const handleKeyDown = (event) => {
     if(event.key === "Enter") {
       updateTask();
     }
@@ -91,7 +91,7 @@ const TaskCard = ({task, index, handleTaskChanged}) => {
                 type ="text"
                 value = {updateTaskTitle}
                 onChange ={(event) => setUpdateTaskTitle(event.target.value)}
-                onKeyPress ={handleKeyPress}
+                onKeyDown ={handleKeyDown}
                 onBlur={()=>{
                   setIsEditting(false);
                   setUpdateTaskTitle(task.title || "")
